@@ -17,3 +17,18 @@ def fileread(manifestPath,entity):
 
 def filewrite(df,deltalakepath):
     df.write.mode("overwrite").option("overwriteSchema","true").option("path",ADLS_PATH+deltalakepath).save()
+
+# COMMAND ----------
+
+def filereadfromdeltalake(datapath,entity):
+    df3=spark.read.format("delta").option("path",ADLS_PATH+datapath).load()
+    return(df3)
+
+# COMMAND ----------
+
+def writetoschema(df,schema,entity):
+    schema=schema.lower()
+    entity=entity.lower()
+    spark.sql(f"CREATE SCHEMA IF NOT EXISTS {schema}")
+    df.write.format("delta").mode("overwrite").saveAsTable(f"{schema}.{entity}")
+   
